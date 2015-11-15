@@ -1,27 +1,25 @@
-;
-; A simple boot sector program that demonstrates the stack.
-;
+mov bx, 50
 
-mov ah, 0x0e            ; int 10/ ah = 0eh -> scrolling teletype BIOS routine
-mov bp, 0x8000          ; Set the base of the stack a little above where BIOS
-mov sp, bp              ; loads our boot sector - so it won't overwrite us.
+cmp bl, 4
+  jle if_block
 
-push 'A'                ; Push some characters on the stack for later
-push 'B'                ; retreival. Note, these are pushed on as
-push 'C'                ; 16 - bit values, so the most significant byte
-                        ; will be added by our assembler as 0x00.
+  cmp bl, 40
+    jl else_if_block
 
-pop bx                  ; Note, we can only pop 16 - bits, so pop to bx
-mov al, bl              ; then copy bl ( i.e. 8- bit char ) to al
-int 0x10                ; print (al)
+    mov al, 'C'
+jmp end_if
 
-pop bx                  ; Pop the next value
-mov al, bl
-int 0x10                ; print (al)
+if_block:
+  mov al, 'A'
+  jmp end_if
 
-mov al, [0x7ffe]        ; To prove our stack grows downwards from bp ,
-                        ; fetch the char at 0x8000 - 0x2 ( i.e. 16 - bits )
-int 0x10                ; print (al)
+else_if_block:
+  mov al, 'B'
+
+end_if:
+
+mov ah, 0x0e ; int =10/ ah =0x0e -> BIOS tele - type output
+int 0x10 ; print the character in al
 
 jmp $                   ; Jump forever.
 
