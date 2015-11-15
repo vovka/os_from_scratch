@@ -1,27 +1,34 @@
 ;
-; A simple boot sector program that loops forever.
+; A simple boot sector program that demonstrates addressing.
 ;
+
+[org 0x7c00]
 
 mov ah, 0x0e            ; int 10/ ah = 0eh -> scrolling teletype BIOS routine
 
-mov al, 'H'
-int 0x10
-mov al, 'e'
-int 0x10
-mov al, 'l'
-int 0x10
-mov al, 'l'
-int 0x10
-mov al, 'o'
-int 0x10
+; ; First attempt
+; mov al, the_secret
+; int 0x10              ; Does this print an X?
 
-jmp $                   ; Jump to the current address ( i.e. forever ).
+; ; Second attempt
+; mov al, [the_secret]
+; int 0x10              ; Does this print an X?
 
-times 510-($-$$) db 0   ; When compiled , our program must fit into 512 bytes ,
-                        ; with the last two bytes being the magic number ,
-                        ; so here , tell our assembly compiler to pad out our
-                        ; program with enough zero bytes (db 0) to bring us to the
-                        ; 510 th byte.
+; Third attempt
+mov bx, the_secret
+; add bx, 0x7c00
+mov al, [bx]
+int 0x10                ; Does this print an X?
 
-dw 0xaa55               ; Last two bytes ( one word ) form the magic number ,
-                        ; so BIOS knows we are a boot sector.
+; Fourth attempt
+mov al, [0x7c10]
+int 0x10              ; Does this print an X?
+
+jmp $                 ; Jump forever.
+
+the_secret :
+  db "X"
+
+; Padding and magic BIOS number.
+times 510-($-$$) db 0
+dw 0xaa55
