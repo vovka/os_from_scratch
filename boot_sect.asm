@@ -1,27 +1,26 @@
-mov bx, 50
+;
+; A boot sector that prints a string using our function.
+;
 
-cmp bl, 4
-  jle if_block
+[org 0x7c00]                        ; Tell the assembler where this code will be loaded
 
-  cmp bl, 40
-    jl else_if_block
+mov bx, HELLO_MSG                   ; Use BX as a parameter to our function, so
+call print_string                   ; we can specify the address of a string.
 
-    mov al, 'C'
-jmp end_if
+mov bx, GOODBYE_MSG
+call print_string
 
-if_block:
-  mov al, 'A'
-  jmp end_if
+jmp $                               ; Hang
 
-else_if_block:
-  mov al, 'B'
+%include "print_string.asm"
+%include "print_ascii_table.asm"
 
-end_if:
-
-mov ah, 0x0e ; int =10/ ah =0x0e -> BIOS tele - type output
-int 0x10 ; print the character in al
-
-jmp $                   ; Jump forever.
+; Data
+HELLO_MSG:
+  db 'Hello, World!', 0             ; <-- The zero on the end tells our routine
+                                    ; when to stop printing characters.
+GOODBYE_MSG:
+  db 'Goodbye!', 0
 
 ; Padding and magic BIOS number.
 times 510-($-$$) db 0
