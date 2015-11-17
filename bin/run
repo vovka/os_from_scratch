@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [[ $1 = 'debug' || $1 = 'd' ]]; then
+  ./bin/nasm && ./bin/bochs
+else 
+  ./bin/nasm && ./bin/bochs &> /dev/null
+fi
+
