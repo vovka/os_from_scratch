@@ -1,26 +1,28 @@
 ;
-; A boot sector that prints a string using our function.
+; A boot sector that prints hex digit.
 ;
 
-[org 0x7c00]                        ; Tell the assembler where this code will be loaded
+[org 0x7c00]            ; Tell the assembler where this code will be loaded
 
-mov bx, HELLO_MSG                   ; Use BX as a parameter to our function, so
-call print_string                   ; we can specify the address of a string.
+mov dx, 0xdcba
+call print_hex
 
-mov bx, GOODBYE_MSG
+newline: db 0x000a,0
+mov bx, newline
 call print_string
 
-jmp $                               ; Hang
+mov dx, 0xabcd
+call print_hex0
 
-%include "print_string.asm"
+; mov bx, newline
+; call print_string
+
+; call print_ascii_table
+
+jmp $                   ; Hang
+
+%include "print_hex.asm"
 %include "print_ascii_table.asm"
-
-; Data
-HELLO_MSG:
-  db 'Hello, World!', 0             ; <-- The zero on the end tells our routine
-                                    ; when to stop printing characters.
-GOODBYE_MSG:
-  db 'Goodbye!', 0
 
 ; Padding and magic BIOS number.
 times 510-($-$$) db 0
